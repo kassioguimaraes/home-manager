@@ -8,12 +8,19 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    nixgl = {
+      inputs.nixpkgs.follows = "nixpkgs";
+      url = "github:nix-community/nixGL";
+    };
   };
 
-  outputs = { nixpkgs, home-manager, ... }:
+  outputs = { nixpkgs, nixgl, home-manager, ... }:
     let
       system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages.${system};
+        pkgs = import nixpkgs {
+          inherit system;
+          overlays = [ nixgl.overlay ];
+        };
     in {
       homeConfigurations."kassio" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
@@ -24,6 +31,8 @@
 
         # Optionally use extraSpecialArgs
         # to pass through arguments to home.nix
+
+        extraSpecialArgs = { inherit nixgl; };
       };
     };
 }

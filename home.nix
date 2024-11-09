@@ -1,10 +1,14 @@
-{ config, pkgs, ... }:
+{ config, pkgs, nixgl, ... }:
 
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home.username = "kassio";
   home.homeDirectory = "/home/kassio";
+  nixGL = {
+    packages = nixgl.packages;
+    defaultWrapper = "mesa";
+  };
   nixpkgs = {
     config = {
       allowUnfree = true;
@@ -58,14 +62,14 @@
   # services.flameshot.enable = true;
   # services.unclutter.enable = true;
   home.packages = with pkgs; [
-    nodejs_20
-    bun
-    postman
-    discord
+    pkgs.nixgl.nixGLIntel
+    nodejs_22
+    (config.lib.nixGL.wrap postman)
+    (config.lib.nixGL.wrap discord)
     rofi-power-menu
     taskwarrior-tui
     taskwarrior3
-    dbeaver-bin
+    (config.lib.nixGL.wrap dbeaver-bin)
     tmux-sessionizer
     nautilus
     bitwarden
